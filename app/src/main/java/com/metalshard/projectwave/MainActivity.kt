@@ -253,7 +253,7 @@ class MainActivity : ComponentActivity() {
                                 useDynamicColors = useDynamicColors,
                                 onDynamicColorsChange = { useDynamicColors = it },
                                 onImportM3U = { m3uImportLauncher.launch(arrayOf("*/*")) },
-                                onExportM3U = { m3uExportLauncher.launch("ProjectWave_Backup.m3u") }
+                                onExportM3U = { m3uExportLauncher.launch("Acoustic_Backup.m3u") }
                             )
                         }
                     }
