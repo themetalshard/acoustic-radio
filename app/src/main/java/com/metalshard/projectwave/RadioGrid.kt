@@ -38,7 +38,7 @@ fun RadioCard(station: RadioStation, onClick: () -> Unit, onLongClick: () -> Uni
                 model = station.imageUrl,
                 contentDescription = station.name,
                 modifier = Modifier.weight(1f).fillMaxWidth(),
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
                 placeholder = placeholder,
                 error = placeholder
             )

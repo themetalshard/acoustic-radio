@@ -24,7 +24,6 @@ class PlaybackService : MediaSessionService() {
 
         player.addListener(object : androidx.media3.common.Player.Listener {
             override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-                super.onMediaMetadataChanged(mediaMetadata)
             }
         })
 

@@ -33,13 +33,12 @@ class RadioPlayer(context: Context) {
     private fun setupControllerListener() {
         controller?.addListener(object : Player.Listener {
             override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-                val title = mediaMetadata.title?.toString() ?: ""
-                val artist = mediaMetadata.artist?.toString() ?: ""
+                val songTitle = mediaMetadata.title?.toString() ?: ""
+                val stationName = mediaMetadata.artist?.toString() ?: ""
 
                 _streamTitle.value = when {
-                    title.isNotBlank() && artist.isNotBlank() -> "$artist - $title"
-                    title.isNotBlank() -> title
-                    else -> ""
+                    songTitle.isNotBlank() && songTitle != stationName -> "$stationName - $songTitle"
+                    else -> stationName
                 }
             }
 
@@ -48,9 +47,17 @@ class RadioPlayer(context: Context) {
                     Player.STATE_BUFFERING -> _playbackInfo.value = "Buffering..."
                     Player.STATE_READY -> {
                         val format = controller?.currentTracks?.groups?.firstOrNull()?.getTrackFormat(0)
-                        val codec = format?.sampleMimeType?.split("/")?.lastOrNull()?.uppercase() ?: "AAC"
-                        val bitrate = if (format != null && format.bitrate > 0) "${format.bitrate / 1000}kbps" else "128kbps"
-                        _playbackInfo.value = "$codec $bitrate"
+
+                        val codec = format?.sampleMimeType?.split("/")?.lastOrNull()?.uppercase()
+
+                        val bitrate = if (format != null && format.bitrate > 0) "${format.bitrate / 1000}kbps" else null
+
+                        _playbackInfo.value = when {
+                            codec != null && bitrate != null -> "$codec $bitrate"
+                            codec != null -> codec
+                            bitrate != null -> bitrate
+                            else -> "Playing"
+                        }
                     }
                     else -> _playbackInfo.value = "Stopped"
                 }
@@ -61,7 +68,12 @@ class RadioPlayer(context: Context) {
     fun play(station: RadioStation) {
         val mediaItem = MediaItem.Builder()
             .setUri(station.streamUrl)
-            .setMediaMetadata(MediaMetadata.Builder().setArtist(station.name).build())
+            .setMediaMetadata(
+                MediaMetadata.Builder()
+                    .setArtist(station.name)
+                    .setArtworkUri(android.net.Uri.parse(station.imageUrl))
+                    .build()
+            )
             .build()
 
         controller?.setMediaItem(mediaItem)

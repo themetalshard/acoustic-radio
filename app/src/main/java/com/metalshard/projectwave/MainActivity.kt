@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -36,6 +37,7 @@ import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
+import coil.decode.SvgDecoder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.delay
@@ -81,6 +83,7 @@ class MainActivity : ComponentActivity() {
         radioPlayer = RadioPlayer(this)
 
         val imageLoader = ImageLoader.Builder(this)
+            .components { add(SvgDecoder.Factory()) }
             .memoryCache { MemoryCache.Builder(this).maxSizePercent(0.25).build() }
             .diskCache {
                 DiskCache.Builder()
@@ -370,7 +373,7 @@ fun SettingsScreen(
             Column(modifier = Modifier.padding(16.dp)) {
                 val creditsText = "Acoustic v1.0\n\n" +
                         "Developed by:\n" +
-                        "TheNextAtlas\n\n" +
+                        "TheNextAtlas (Formerly TheMetalShard)\n\n" +
                         "Special thanks:\n" +
                         "NexGenDriven\nEveryone in the Steel Project"
 
@@ -395,45 +398,142 @@ fun BottomPlayerBar(
     timer: String,
     onStop: () -> Unit
 ) {
+    var isExpanded by remember { mutableStateOf(false) }
+    var sleepTimerMinutes by remember { mutableIntStateOf(0) }
+    var showTimerDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(sleepTimerMinutes) {
+        if (sleepTimerMinutes > 0) {
+            while (sleepTimerMinutes > 0) {
+                delay(60000)
+                sleepTimerMinutes--
+            }
+            onStop()
+        }
+    }
+
+    if (showTimerDialog) {
+        TimerInputDialog(
+            onDismiss = { showTimerDialog = false },
+            onConfirm = { minutes ->
+                sleepTimerMinutes = minutes
+                showTimerDialog = false
+            }
+        )
+    }
+
     Surface(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .clickable { isExpanded = !isExpanded },
         tonalElevation = 12.dp,
-        shape = CircleShape,
+        shape = RoundedCornerShape(32.dp),
         color = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp)
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            AsyncImage(
-                model = station.imageUrl,
-                contentDescription = null,
-                modifier = Modifier.size(48.dp).clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
-            Spacer(Modifier.width(12.dp))
-            Column(Modifier.weight(1f)) {
-                Text(text = station.name, fontWeight = FontWeight.ExtraBold, maxLines = 1, fontSize = 15.sp)
-                if (streamTitle.isNotBlank()) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                AsyncImage(
+                    model = station.imageUrl,
+                    contentDescription = null,
+                    modifier = Modifier.size(48.dp).clip(CircleShape),
+                    contentScale = ContentScale.Fit
+                )
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(text = station.name, fontWeight = FontWeight.ExtraBold, maxLines = 1, fontSize = 15.sp)
+                    if (streamTitle.isNotBlank()) {
+                        Text(
+                            text = streamTitle,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            maxLines = 1,
+                            fontSize = 12.sp,
+                            modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE, delayMillis = 2000)
+                        )
+                    }
                     Text(
-                        text = streamTitle,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        maxLines = 1,
-                        fontSize = 12.sp,
-                        modifier = Modifier.basicMarquee(iterations = Int.MAX_VALUE, delayMillis = 2000)
+                        text = if (sleepTimerMinutes > 0) "Closing in ${sleepTimerMinutes}m • $stats" else "$stats • $timer",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 10.sp
                     )
                 }
-                Text(text = "$stats • $timer", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp)
+                IconButton(
+                    onClick = onStop,
+                    modifier = Modifier.size(42.dp).background(MaterialTheme.colorScheme.errorContainer, CircleShape)
+                ) {
+                    Icon(Icons.Default.Stop, null, modifier = Modifier.size(24.dp), tint = MaterialTheme.colorScheme.onErrorContainer)
+                }
             }
-            IconButton(
-                onClick = onStop,
-                modifier = Modifier.size(42.dp).background(MaterialTheme.colorScheme.errorContainer, CircleShape)
-            ) {
-                Icon(Icons.Default.Stop, contentDescription = null, modifier = Modifier.size(24.dp), tint = MaterialTheme.colorScheme.onErrorContainer)
+
+            if (isExpanded) {
+                Spacer(Modifier.height(12.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
+                Spacer(Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column {
+                        Text("Sleep Timer", style = MaterialTheme.typography.titleSmall)
+                        if (sleepTimerMinutes > 0) {
+                            Text("Active: ${sleepTimerMinutes}m left", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelSmall)
+                        }
+                    }
+
+                    IconButton(
+                        onClick = { showTimerDialog = true },
+                        modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer, CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Schedule,
+                            contentDescription = "Set Timer",
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                }
             }
         }
     }
+}
+
+@Composable
+fun TimerInputDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (Int) -> Unit
+) {
+    var textValue by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Set Sleep Timer") },
+        text = {
+            Column {
+                Text("Enter minutes until stop:", style = MaterialTheme.typography.bodyMedium)
+                Spacer(Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = textValue,
+                    onValueChange = { if (it.all { char -> char.isDigit() }) textValue = it },
+                    label = { Text("Minutes") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("e.g. 30") }
+                )
+            }
+        },
+        confirmButton = {
+            Button(onClick = {
+                val mins = textValue.toIntOrNull() ?: 0
+                onConfirm(mins)
+            }) { Text("Set Timer") }
+        },
+        dismissButton = {
+            TextButton(onClick = { onConfirm(0) }) { Text("Disable", color = Color.Red) }
+        }
+    )
 }
 
 @Composable
