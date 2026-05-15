@@ -19,6 +19,14 @@
 > [!NOTE]
 > If you wish to suggest features, feel free to open an issue for the suggestion.
 
+## Verify app
+The following signature is valid for Acoustic and all Steel Project apps.
+
+```
+SHA256: A7:D8:20:C7:E5:E9:6B:3B:63:51:D6:9F:6B:C6:AD:D3:CF:AC:55:33:02:27:79:A6:35:97:85:DF:4C:F6:55:59
+```
+
+
 # FAQ
 
 ### Which types of stations are supposed by Acoustic?:
