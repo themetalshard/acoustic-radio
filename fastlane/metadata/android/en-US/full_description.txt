@@ -1,0 +1,4 @@
+<b>PB Schedule Viewer</b> is an app to view schedules and quickly schedule support/response events for the Roblox group Pinewood Builders.
+
+It allows you to view schedules from all the subgroups in both calendar and classic list mode with all details, including UNIX timestamp, time in both local and UTC.
+The app was built with permission using the Kronos API rehosted on my domain, however it is being hosted through the use of an API key in the server.
