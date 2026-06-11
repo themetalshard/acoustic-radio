@@ -1,0 +1,3 @@
+Engadida a tradución (só italiano polo de agora)
+Moveuse o botón de edición ao manter premida a icona da emisora
+Ao manter premido o reprodutor cópiase a info da emisión (Solicitado por @vinceingithub)

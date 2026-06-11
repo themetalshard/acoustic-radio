@@ -1,0 +1,3 @@
+Nuevas traducciones (por ahora solo italiano)
+Movida la función de edición al mantener pulsada la emisora
+Con pulsación larga en el reproductor se copia la info da la emisión (Pedido por @vinceingithub)

@@ -1,0 +1,8 @@
+<b>Acoustic</b> es una aplicación simple para escuchar la radio por internet en Android
+
+Características:
+  Compatible con la importación/exportación de un fichero M3U
+  Funciona en Android 5 a 16
+  Metadados ICY de las emisoras
+  URI para añadir rápidamente una emisora (Utiliza acoustic://register?name=&url=http://url.com&image=http://url.com/image format, only URL entry is required)
+  Sin rastreo adicional
