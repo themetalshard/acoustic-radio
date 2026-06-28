@@ -1,6 +1,6 @@
 <div align="center">
 
-<p><img src="./app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" width="200" alt="OpenWOL logo"></p>
+<p><img src="./app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" width="200" alt="Acoustic logo (sorry, I used a similar template to OpenWOL, apologies)"></p>
 
 # Acoustic
 ### <b>Acoustic</b> is an internet radio app for Android. (Icon made with Google MD3 symbols)
@@ -30,6 +30,19 @@ SHA256: A7:D8:20:C7:E5:E9:6B:3B:63:51:D6:9F:6B:C6:AD:D3:CF:AC:55:33:02:27:79:A6:
 
 
 # FAQ
+
+### How does the URI work?
+To use the Acoustic URI the following format is required:
+acoustic://register?name=Test Station&url=http://url.com/station.mp3&image=http://url.com/image.png
+
+You may omit the image and name parameter, only the URL parameter is required
+
+If you want to add a quick button for adding stations to Acoustic to your station website you can use this image:
+  
+  <a href="acoustic://register?name=Test Station&url=http://url.com/station.mp3&image=http://url.com/image.png">
+    <img src="https://i.imgur.com/xlGynVh.png" alt="Add station to Acoustic" width="200" />
+  </a>
+
 
 ### Which types of stations are supposed by Acoustic?
 Acoustic currently support MP3, AAC, and also M3U8 HLS. Opus and others may work but is untested.
