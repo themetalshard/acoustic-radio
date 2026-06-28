@@ -62,8 +62,3 @@ You can install the app using Obtainium through these steps:
 5. Click 'Install'
 
 If you wish, you can also simply install the latest APK from the [Releases](https://github.com/themetalshard/acoustic-radio/releases) page.
-
-# Discord
-We have a community over at the Steel Project, our devgroup behind PB Schedule Viewer and Acoustic!
-
-Join at https://discord.gg/qwry8hdVWb
