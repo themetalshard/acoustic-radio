@@ -19,7 +19,9 @@
 - Browser URI for quick station adding
 
 > [!NOTE]
-> If you wish to suggest features, feel free to open an issue for the suggestion.
+> If you wish to suggest features, head over to the Discussions page and create a new discussion under Ideas.
+> 
+> I'll also allow pull requests to happen as long as you've described it properly
 
 ## Verify app
 The following signature is valid for Acoustic and all Steel Project apps.
